@@ -10,5 +10,5 @@ export interface IHRTokenPair {
 
 export interface ICompanyToknenPair {
   accessCompanyToken: string;
-  refreshCompanyTokne: string;
+  refreshCompanyToken: string;
 }
