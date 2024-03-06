@@ -9,11 +9,11 @@ const hrTokenSchema = new Schema(
       required: true,
       ref: HR,
     },
-    accessToken: {
+    accessHRToken: {
       type: String,
       required: true,
     },
-    refreshToken: {
+    refreshHRToken: {
       type: String,
       required: true,
     },

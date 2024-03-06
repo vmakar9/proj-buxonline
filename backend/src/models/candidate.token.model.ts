@@ -9,11 +9,11 @@ const candidateTokenSchema = new Schema(
       required: true,
       ref: Candidate,
     },
-    accessToken: {
+    accessCandidateToken: {
       type: String,
       required: true,
     },
-    refreshToken: {
+    refreshCandidateToken: {
       type: String,
       required: true,
     },

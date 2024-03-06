@@ -9,11 +9,11 @@ const companyTokenSchema = new Schema(
       required: true,
       ref: Company,
     },
-    accessToken: {
+    accessCompanyToken: {
       type: String,
       required: true,
     },
-    refreshToken: {
+    refreshCompanyToken: {
       type: String,
       required: true,
     },
