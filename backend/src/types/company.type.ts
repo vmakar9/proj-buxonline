@@ -5,4 +5,5 @@ export interface ICompany {
   specialization: string;
   site_link: string;
   about_company: string;
+  password: string;
 }

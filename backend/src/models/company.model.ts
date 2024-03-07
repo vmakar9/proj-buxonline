@@ -12,12 +12,14 @@ const companySchema = new Schema(
     },
     specialization: {
       type: String,
-      required: true,
     },
     site_link: {
       type: String,
     },
     about_company: {
+      type: String,
+    },
+    password: {
       type: String,
       required: true,
     },

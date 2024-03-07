@@ -24,4 +24,4 @@ const candidateTokenSchema = new Schema(
   },
 );
 
-export const Token = model("Candidate Token", candidateTokenSchema);
+export const CandidateToken = model("Candidate Token", candidateTokenSchema);
