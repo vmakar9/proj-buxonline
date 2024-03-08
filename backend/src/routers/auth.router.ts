@@ -1,6 +1,7 @@
 import Router from "express";
 
 import { authController } from "../controllers/auth.controller";
+import { authMiddleware } from "../middleware/auth.middleware";
 import { candidateMiddleware } from "../middleware/candidate.middleware";
 import { companyMiddleware } from "../middleware/company.middleware";
 import { hrMiddleware } from "../middleware/hr.middleware";
@@ -41,6 +42,24 @@ router.post(
   "/company-login",
   companyMiddleware.getDynamicallyOrThrow("cooperative_email"),
   authController.companyLogin,
+);
+
+router.post(
+  "/refresh-candidate",
+  authMiddleware.checkCandidateRefreshToken,
+  authController.refreshCandidate,
+);
+
+router.post(
+  "/refresh-hr",
+  authMiddleware.checkHRRefreshToken,
+  authController.refreshHR,
+);
+
+router.post(
+  "/refresh-company",
+  authMiddleware.checkCompanyRefreshToken,
+  authController.refreshCompany,
 );
 
 export const authRouter = router;

@@ -15,8 +15,11 @@ import { ICompany } from "../types/company.type";
 import { IHR } from "../types/hr.type";
 import {
   ICandidateTokenPair,
+  ICandidateTokenPayload,
   ICompanyTokenPair,
+  ICompanyTokenPayload,
   IHRTokenPair,
+  IHRTokenPayload,
 } from "../types/token.type";
 import { passwordService } from "./password.service";
 import { tokenService } from "./token.service";
@@ -130,6 +133,66 @@ class AuthService {
       return tokenPair;
     } catch (e) {
       throw new ApiError(e.error, e.message);
+    }
+  }
+
+  public async refreshCandidate(
+    tokenInfo: ICandidateTokenPair,
+    jwtPayload: ICandidateTokenPayload,
+  ): Promise<ICandidateTokenPair> {
+    try {
+      const tokenPair = tokenService.generateCandidateToken({
+        _id: jwtPayload._id,
+      });
+      await Promise.all([
+        CandidateToken.create({ _candidate_id: jwtPayload._id, ...tokenPair }),
+        CandidateToken.deleteOne({
+          refreshCandidateToken: tokenInfo.refreshCandidateToken,
+        }),
+      ]);
+      return tokenPair;
+    } catch (e) {
+      throw new ApiError(e.message, e.status);
+    }
+  }
+
+  public async refreshHR(
+    tokenInfo: IHRTokenPair,
+    jwtPayload: IHRTokenPayload,
+  ): Promise<IHRTokenPair> {
+    try {
+      const tokenPair = tokenService.generateHRToken({
+        _id: jwtPayload._id,
+      });
+      await Promise.all([
+        HRToken.create({ _hr_id: jwtPayload._id, ...tokenPair }),
+        HRToken.deleteOne({
+          refreshHRToken: tokenInfo.refreshHRToken,
+        }),
+      ]);
+      return tokenPair;
+    } catch (e) {
+      throw new ApiError(e.message, e.status);
+    }
+  }
+
+  public async refreshCompany(
+    tokenInfo: ICompanyTokenPair,
+    jwtPayload: ICompanyTokenPayload,
+  ): Promise<ICompanyTokenPair> {
+    try {
+      const tokenPair = tokenService.generateCompanyToken({
+        _id: jwtPayload._id,
+      });
+      await Promise.all([
+        CompanyToken.create({ _company_id: jwtPayload._id, ...tokenPair }),
+        CompanyToken.deleteOne({
+          refreshCompanyToken: tokenInfo.refreshCompanyToken,
+        }),
+      ]);
+      return tokenPair;
+    } catch (e) {
+      throw new ApiError(e.message, e.status);
     }
   }
 }

@@ -76,6 +76,43 @@ class AuthController {
       next(e);
     }
   }
+
+  public async refreshCandidate(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { tokenInfo, jwtPayload } = req.res.locals;
+      const tokenPair = await authService.refreshCandidate(
+        tokenInfo,
+        jwtPayload,
+      );
+      return res.status(200).json(tokenPair);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async refreshHR(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { tokenInfo, jwtPayload } = req.res.locals;
+      const tokenPair = await authService.refreshHR(tokenInfo, jwtPayload);
+      return res.status(200).json(tokenPair);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async refreshCompany(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { tokenInfo, jwtPayload } = req.res.locals;
+      const tokenPair = await authService.refreshCompany(tokenInfo, jwtPayload);
+      return res.status(200).json(tokenPair);
+    } catch (e) {
+      next(e);
+    }
+  }
 }
 
 export const authController = new AuthController();
