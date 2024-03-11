@@ -62,4 +62,22 @@ router.post(
   authController.refreshCompany,
 );
 
+router.post(
+  "/change-password-candidate",
+  authMiddleware.checkCandidateAccessToken,
+  authController.changeCandidatePassword,
+);
+
+router.post(
+  "/change-password-hr",
+  authMiddleware.checkHRAccessToken,
+  authController.changeHRPassword,
+);
+
+router.post(
+  "/change-password-company",
+  authMiddleware.checkCompanyAccessToken,
+  authController.changeCompanyPassword,
+);
+
 export const authRouter = router;

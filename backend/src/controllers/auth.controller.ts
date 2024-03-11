@@ -1,6 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 
 import { authService } from "../services/auth.service";
+import { IChangePassword } from "../types/auth.type";
+import {
+  ICandidateTokenPayload,
+  ICompanyTokenPayload,
+  IHRTokenPayload,
+} from "../types/token.type";
 
 class AuthController {
   public async candidateRegister(
@@ -109,6 +115,54 @@ class AuthController {
       const { tokenInfo, jwtPayload } = req.res.locals;
       const tokenPair = await authService.refreshCompany(tokenInfo, jwtPayload);
       return res.status(200).json(tokenPair);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async changeCandidatePassword(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const jwtPayload = req.res.locals.jwtPayload as ICandidateTokenPayload;
+      const body = req.body as IChangePassword;
+
+      await authService.changeCandidatePassword(body, jwtPayload);
+      return res.sendStatus(204);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async changeHRPassword(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const jwtPayload = req.res.locals.jwtPayload as IHRTokenPayload;
+      const body = req.body as IChangePassword;
+
+      await authService.changeHRPassword(body, jwtPayload);
+      return res.sendStatus(204);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async changeCompanyPassword(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const jwtPayload = req.res.locals.jwtPayload as ICompanyTokenPayload;
+      const body = req.body as IChangePassword;
+
+      await authService.changeCompanyPassword(body, jwtPayload);
+      return res.sendStatus(204);
     } catch (e) {
       next(e);
     }

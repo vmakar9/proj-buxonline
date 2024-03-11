@@ -7,6 +7,7 @@ import { HR } from "../models/hr.model";
 import { HRToken } from "../models/hr.token.model";
 import {
   ICandidateCredentials,
+  IChangePassword,
   ICompanyCredentials,
   IHRCredentials,
 } from "../types/auth.type";
@@ -191,6 +192,100 @@ class AuthService {
         }),
       ]);
       return tokenPair;
+    } catch (e) {
+      throw new ApiError(e.message, e.status);
+    }
+  }
+
+  public async changeCandidatePassword(
+    data: IChangePassword,
+    jwtPayload: ICandidateTokenPayload,
+  ): Promise<void> {
+    try {
+      const candidate = await Candidate.findOne({ _id: jwtPayload._id });
+      if (!candidate) {
+        throw new ApiError("Candidate not found", 404);
+      }
+
+      const isMatch = await passwordService.compare(
+        data.oldPassword,
+        candidate.password,
+      );
+      if (!isMatch) {
+        throw new ApiError("Old password is invalid", 400);
+      }
+
+      const hashedNewCandidatePassword = await passwordService.hash(
+        data.newPassword,
+      );
+
+      await Candidate.findByIdAndUpdate(
+        candidate._id,
+        { password: hashedNewCandidatePassword },
+        { returnDocument: "after" },
+      );
+    } catch (e) {
+      throw new ApiError(e.message, e.status);
+    }
+  }
+
+  public async changeHRPassword(
+    data: IChangePassword,
+    jwtPayload: IHRTokenPayload,
+  ): Promise<void> {
+    try {
+      const hr = await HR.findOne({ _id: jwtPayload._id });
+      if (!hr) {
+        throw new ApiError("HR not found", 404);
+      }
+
+      const isMatch = await passwordService.compare(
+        data.oldPassword,
+        hr.password,
+      );
+      if (!isMatch) {
+        throw new ApiError("Old password is invalid", 400);
+      }
+
+      const hashedNewHRPassword = await passwordService.hash(data.newPassword);
+
+      await HR.findByIdAndUpdate(
+        hr._id,
+        { password: hashedNewHRPassword },
+        { returnDocument: "after" },
+      );
+    } catch (e) {
+      throw new ApiError(e.message, e.status);
+    }
+  }
+
+  public async changeCompanyPassword(
+    data: IChangePassword,
+    jwtPayload: ICompanyTokenPayload,
+  ): Promise<void> {
+    try {
+      const company = await Company.findOne({ _id: jwtPayload._id });
+      if (!company) {
+        throw new ApiError("Company not found", 404);
+      }
+
+      const isMatch = await passwordService.compare(
+        data.oldPassword,
+        company.password,
+      );
+      if (!isMatch) {
+        throw new ApiError("Old password is invalid", 400);
+      }
+
+      const hashedNewCompanyPassword = await passwordService.hash(
+        data.newPassword,
+      );
+
+      await Company.findByIdAndUpdate(
+        company._id,
+        { password: hashedNewCompanyPassword },
+        { returnDocument: "after" },
+      );
     } catch (e) {
       throw new ApiError(e.message, e.status);
     }

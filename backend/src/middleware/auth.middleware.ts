@@ -16,10 +16,13 @@ class AuthMiddleware {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const accessCandidateToken = req.get("Authorization");
-      if (!accessCandidateToken) {
+      const tokenString = req.get("Authorization");
+      if (!tokenString) {
         throw new ApiError("No token", 401);
       }
+
+      const accessCandidateToken = tokenString.split("Bearer ")[1];
+
       const jwtPayload = tokenService.checkCandidateToken(
         accessCandidateToken,
         ECandidateTokenEnum.accessCandidate,
@@ -38,10 +41,13 @@ class AuthMiddleware {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const refreshCandidateToken = req.get("Authorization");
-      if (!refreshCandidateToken) {
+      const tokenString = req.get("Authorization");
+      if (!tokenString) {
         throw new ApiError("No token", 401);
       }
+
+      const refreshCandidateToken = tokenString.split("Bearer ")[1];
+
       const jwtPayload = tokenService.checkCandidateToken(
         refreshCandidateToken,
         ECandidateTokenEnum.refreshCandidate,
@@ -60,10 +66,13 @@ class AuthMiddleware {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const accessHRToken = req.get("Authorization");
-      if (!accessHRToken) {
+      const tokenString = req.get("Authorization");
+      if (!tokenString) {
         throw new ApiError("No token", 401);
       }
+
+      const accessHRToken = tokenString.split("Bearer ")[1];
+
       const jwtPayload = tokenService.checkHRToken(
         accessHRToken,
         EHRTokenEnum.accessHR,
@@ -82,10 +91,13 @@ class AuthMiddleware {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const refreshHRToken = req.get("Authorization");
-      if (!refreshHRToken) {
+      const tokenString = req.get("Authorization");
+      if (!tokenString) {
         throw new ApiError("No token", 401);
       }
+
+      const refreshHRToken = tokenString.split("Bearer ")[1];
+
       const jwtPayload = tokenService.checkHRToken(
         refreshHRToken,
         EHRTokenEnum.refreshHR,
@@ -104,10 +116,13 @@ class AuthMiddleware {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const accessCompanyToken = req.get("Authorization");
-      if (!accessCompanyToken) {
+      const tokenString = req.get("Authorization");
+      if (!tokenString) {
         throw new ApiError("No token", 401);
       }
+
+      const accessCompanyToken = tokenString.split("Bearer ")[1];
+
       const jwtPayload = tokenService.checkCompanyToken(
         accessCompanyToken,
         ECompanyTokenEnum.accessCompany,
@@ -126,10 +141,13 @@ class AuthMiddleware {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const refreshCompanyToken = req.get("Authorization");
-      if (!refreshCompanyToken) {
+      const tokenString = req.get("Authorization");
+      if (!tokenString) {
         throw new ApiError("No token", 401);
       }
+
+      const refreshCompanyToken = tokenString.split("Bearer ")[1];
+
       const jwtPayload = tokenService.checkCompanyToken(
         refreshCompanyToken,
         ECompanyTokenEnum.refreshCompany,
