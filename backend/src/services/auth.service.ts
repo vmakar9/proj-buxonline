@@ -1,4 +1,7 @@
+import { EActionTokenType } from "../enum/action-token-type.enum";
+import { EEmailCandidateEnum } from "../enum/email-candiate.enum";
 import { ApiError } from "../erorr/api.error";
+import { ActionCandidateToken } from "../models/action.token.candidate.model";
 import { Candidate } from "../models/candidate.model";
 import { CandidateToken } from "../models/candidate.token.model";
 import { Company } from "../models/company.model";
@@ -22,6 +25,7 @@ import {
   IHRTokenPair,
   IHRTokenPayload,
 } from "../types/token.type";
+import { emailService } from "./email.service";
 import { passwordService } from "./password.service";
 import { tokenService } from "./token.service";
 
@@ -286,6 +290,53 @@ class AuthService {
         { password: hashedNewCompanyPassword },
         { returnDocument: "after" },
       );
+    } catch (e) {
+      throw new ApiError(e.message, e.status);
+    }
+  }
+
+  public async forgotCandidatePassword(candidate: ICandidate): Promise<void> {
+    try {
+      const actionToken = tokenService.generateCandidateActionToken(
+        { _id: candidate._id },
+        EActionTokenType.forgot,
+      );
+
+      await ActionCandidateToken.create({
+        _candidate_id: candidate._id,
+        tokenType: EActionTokenType.forgot,
+        actionToken,
+      });
+
+      await emailService.sendCandidateEmail(
+        candidate.email,
+        EEmailCandidateEnum.FORGOT_PASSWORD,
+        {
+          token: actionToken,
+        },
+      );
+    } catch (e) {
+      throw new ApiError(e.message, e.status);
+    }
+  }
+
+  public async setForgotPassword(password: string, actionToken: string) {
+    try {
+      const payload = tokenService.checkCandidateActionToken(
+        actionToken,
+        EActionTokenType.forgot,
+      );
+      const entity = await ActionCandidateToken.findOne({ actionToken });
+      if (!entity) {
+        throw new ApiError("Not valid token", 400);
+      }
+      const newHashedPassword = await passwordService.hash(password);
+      await Promise.all([
+        Candidate.findByIdAndUpdate(payload._id, {
+          password: newHashedPassword,
+        }),
+        ActionCandidateToken.deleteOne({ actionToken }),
+      ]);
     } catch (e) {
       throw new ApiError(e.message, e.status);
     }

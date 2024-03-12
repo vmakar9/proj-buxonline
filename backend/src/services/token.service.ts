@@ -1,11 +1,13 @@
 import * as jwt from "jsonwebtoken";
 
 import { configs } from "../configs/configs";
+import { EActionTokenType } from "../enum/action-token-type.enum";
 import { ECandidateTokenEnum } from "../enum/candidate-token-type.enum";
 import { ECompanyTokenEnum } from "../enum/company-token-type.enum";
 import { EHRTokenEnum } from "../enum/hr-token-type.enum";
 import { ApiError } from "../erorr/api.error";
 import {
+  ICandidateActionTokenPayload,
   ICandidateTokenPair,
   ICandidateTokenPayload,
   ICompanyTokenPair,
@@ -126,6 +128,42 @@ class TokenService {
           break;
       }
       return jwt.verify(token, secret) as ICandidateTokenPayload;
+    } catch (e) {
+      throw new ApiError("Token not valid", 401);
+    }
+  }
+
+  public generateCandidateActionToken(
+    payload: ICandidateActionTokenPayload,
+    tokenType: EActionTokenType,
+  ) {
+    let secret = "";
+    switch (tokenType) {
+      case EActionTokenType.forgot:
+        secret = configs.JWT_CANDIDATE_FORGOT_SECRET;
+        break;
+    }
+
+    return jwt.sign(payload, secret, {
+      expiresIn: "3d",
+    });
+  }
+
+  public checkCandidateActionToken(
+    actionCandidateToken: string,
+    type: EActionTokenType,
+  ) {
+    try {
+      let secret = "";
+      switch (type) {
+        case EActionTokenType.forgot:
+          secret = configs.JWT_CANDIDATE_FORGOT_SECRET;
+          break;
+      }
+      return jwt.verify(
+        actionCandidateToken,
+        secret,
+      ) as ICandidateActionTokenPayload;
     } catch (e) {
       throw new ApiError("Token not valid", 401);
     }

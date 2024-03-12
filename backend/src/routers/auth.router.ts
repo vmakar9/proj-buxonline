@@ -80,4 +80,15 @@ router.post(
   authController.changeCompanyPassword,
 );
 
+router.post(
+  "/forgot-password-candidate",
+  candidateMiddleware.getDynamicallyOrThrow("email"),
+  authController.forgotCandidatePassword,
+);
+
+router.patch(
+  "/forgot-password-candidate/:token",
+  authController.setCandidateForgotPassword,
+);
+
 export const authRouter = router;

@@ -5,6 +5,6 @@ export const allTemplates: {
 } = {
   [EEmailCandidateEnum.FORGOT_PASSWORD]: {
     subject: "Restore password",
-    templateName: "forgot_candidate",
+    templateName: "forgot_password_candidate",
   },
 };
