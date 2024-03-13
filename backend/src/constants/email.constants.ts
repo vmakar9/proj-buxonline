@@ -1,6 +1,6 @@
 import { EEmailCandidateEnum } from "../enum/email-candiate.enum";
 
-export const allTemplates: {
+export const allCandidateTemplates: {
   [key: string]: { subject: string; templateName: string };
 } = {
   [EEmailCandidateEnum.FORGOT_PASSWORD]: {

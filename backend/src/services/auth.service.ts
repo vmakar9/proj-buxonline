@@ -1,7 +1,11 @@
 import { EActionTokenType } from "../enum/action-token-type.enum";
 import { EEmailCandidateEnum } from "../enum/email-candiate.enum";
+import { EEmailCompanyEnum } from "../enum/email-company.enum";
+import { EEmailHREnum } from "../enum/email-hr.enum";
 import { ApiError } from "../erorr/api.error";
 import { ActionCandidateToken } from "../models/action.token.candidate.model";
+import { ActionCompanyToken } from "../models/action.token.company.model";
+import { ActionHRToken } from "../models/action.token.hr.model";
 import { Candidate } from "../models/candidate.model";
 import { CandidateToken } from "../models/candidate.token.model";
 import { Company } from "../models/company.model";
@@ -320,7 +324,10 @@ class AuthService {
     }
   }
 
-  public async setForgotPassword(password: string, actionToken: string) {
+  public async setForgotCandidatePassword(
+    password: string,
+    actionToken: string,
+  ) {
     try {
       const payload = tokenService.checkCandidateActionToken(
         actionToken,
@@ -336,6 +343,100 @@ class AuthService {
           password: newHashedPassword,
         }),
         ActionCandidateToken.deleteOne({ actionToken }),
+      ]);
+    } catch (e) {
+      throw new ApiError(e.message, e.status);
+    }
+  }
+
+  public async forgotHRPassword(hr: IHR): Promise<void> {
+    try {
+      const actionToken = tokenService.generateHRActionToken(
+        { _id: hr._id },
+        EActionTokenType.forgot,
+      );
+
+      await ActionHRToken.create({
+        _hr_id: hr._id,
+        tokenType: EActionTokenType.forgot,
+        actionToken,
+      });
+
+      await emailService.sendHREmail(
+        hr.email,
+        EEmailHREnum.FORGOT_HR_PASSWORD,
+        {
+          token: actionToken,
+        },
+      );
+    } catch (e) {
+      throw new ApiError(e.message, e.status);
+    }
+  }
+
+  public async setForgotHRPassword(password: string, actionToken: string) {
+    try {
+      const payload = tokenService.checkHRActionToken(
+        actionToken,
+        EActionTokenType.forgot,
+      );
+      const entity = await ActionHRToken.findOne({ actionToken });
+      if (!entity) {
+        throw new ApiError("Not valid token", 400);
+      }
+      const newHashedPassword = await passwordService.hash(password);
+      await Promise.all([
+        HR.findByIdAndUpdate(payload._id, {
+          password: newHashedPassword,
+        }),
+        ActionHRToken.deleteOne({ actionToken }),
+      ]);
+    } catch (e) {
+      throw new ApiError(e.message, e.status);
+    }
+  }
+
+  public async forgotCompanyPassword(company: ICompany): Promise<void> {
+    try {
+      const actionToken = tokenService.generateCompanyActionToken(
+        { _id: company._id },
+        EActionTokenType.forgot,
+      );
+
+      await ActionCompanyToken.create({
+        _company_id: company._id,
+        tokenType: EActionTokenType.forgot,
+        actionToken,
+      });
+
+      await emailService.sendCompanyEmail(
+        company.cooperative_email,
+        EEmailCompanyEnum.FORGOT_COMPANY_PASSWORD,
+        {
+          token: actionToken,
+        },
+      );
+    } catch (e) {
+      throw new ApiError(e.message, e.status);
+    }
+  }
+
+  public async setForgotCompanyPassword(password: string, actionToken: string) {
+    try {
+      const payload = tokenService.checkCompanyActionToken(
+        actionToken,
+        EActionTokenType.forgot,
+      );
+      const entity = await ActionCompanyToken.findOne({ actionToken });
+      if (!entity) {
+        throw new ApiError("Not valid token", 400);
+      }
+      const newHashedPassword = await passwordService.hash(password);
+      await Promise.all([
+        Company.findByIdAndUpdate(payload._id, {
+          password: newHashedPassword,
+        }),
+        ActionCompanyToken.deleteOne({ actionToken }),
       ]);
     } catch (e) {
       throw new ApiError(e.message, e.status);

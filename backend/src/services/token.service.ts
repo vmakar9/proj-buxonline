@@ -10,8 +10,10 @@ import {
   ICandidateActionTokenPayload,
   ICandidateTokenPair,
   ICandidateTokenPayload,
+  ICompanyActionTokenPayload,
   ICompanyTokenPair,
   ICompanyTokenPayload,
+  IHRActionTokenPayload,
   IHRTokenPair,
   IHRTokenPayload,
 } from "../types/token.type";
@@ -164,6 +166,72 @@ class TokenService {
         actionCandidateToken,
         secret,
       ) as ICandidateActionTokenPayload;
+    } catch (e) {
+      throw new ApiError("Token not valid", 401);
+    }
+  }
+
+  public generateHRActionToken(
+    payload: IHRActionTokenPayload,
+    tokenType: EActionTokenType,
+  ) {
+    let secret = "";
+    switch (tokenType) {
+      case EActionTokenType.forgot:
+        secret = configs.JWT_HR_FORGOT_SECRET;
+        break;
+    }
+
+    return jwt.sign(payload, secret, {
+      expiresIn: "3d",
+    });
+  }
+
+  public checkHRActionToken(actionHRToken: string, type: EActionTokenType) {
+    try {
+      let secret = "";
+      switch (type) {
+        case EActionTokenType.forgot:
+          secret = configs.JWT_HR_FORGOT_SECRET;
+          break;
+      }
+      return jwt.verify(actionHRToken, secret) as IHRActionTokenPayload;
+    } catch (e) {
+      throw new ApiError("Token not valid", 401);
+    }
+  }
+
+  public generateCompanyActionToken(
+    payload: ICompanyActionTokenPayload,
+    tokenType: EActionTokenType,
+  ) {
+    let secret = "";
+    switch (tokenType) {
+      case EActionTokenType.forgot:
+        secret = configs.JWT_COMPANY_FORGOT_SECRET;
+        break;
+    }
+
+    return jwt.sign(payload, secret, {
+      expiresIn: "3d",
+    });
+  }
+
+  public checkCompanyActionToken(
+    actionCompanyToken: string,
+    type: EActionTokenType,
+  ) {
+    try {
+      let secret = "";
+      switch (type) {
+        case EActionTokenType.forgot:
+          secret = configs.JWT_COMPANY_FORGOT_SECRET;
+          break;
+      }
+      return jwt.verify(
+        actionCompanyToken,
+        secret,
+      ) as ICompanyActionTokenPayload;
     } catch (e) {
       throw new ApiError("Token not valid", 401);
     }

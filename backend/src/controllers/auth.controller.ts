@@ -193,7 +193,73 @@ class AuthController {
       const token = req.params.token;
       const newPassword = req.body.newPassword;
 
-      await authService.setForgotPassword(newPassword, token);
+      await authService.setForgotCandidatePassword(newPassword, token);
+
+      return res.sendStatus(204);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async forgotHRPassword(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { hr } = req.res.locals;
+
+      await authService.forgotHRPassword(hr);
+
+      return res.json("OK");
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async setHRForgotPassword(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const token = req.params.token;
+      const newPassword = req.body.newPassword;
+
+      await authService.setForgotHRPassword(newPassword, token);
+
+      return res.sendStatus(204);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async forgotCompanyPassword(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { company } = req.res.locals;
+
+      await authService.forgotCompanyPassword(company);
+
+      return res.json("OK");
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async setCompanyForgotPassword(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const token = req.params.token;
+      const newPassword = req.body.newPassword;
+
+      await authService.setForgotCompanyPassword(newPassword, token);
 
       return res.sendStatus(204);
     } catch (e) {

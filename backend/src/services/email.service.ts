@@ -3,8 +3,12 @@ import nodemailer, { Transporter } from "nodemailer";
 import * as path from "path";
 
 import { configs } from "../configs/configs";
-import { allTemplates } from "../constants/email.constants";
+import { allCompanyTemplates } from "../constants/email.company.constants";
+import { allCandidateTemplates } from "../constants/email.constants";
+import { allHRTemplates } from "../constants/email.hr.constants";
 import { EEmailCandidateEnum } from "../enum/email-candiate.enum";
+import { EEmailCompanyEnum } from "../enum/email-company.enum";
+import { EEmailHREnum } from "../enum/email-hr.enum";
 import { ApiError } from "../erorr/api.error";
 
 class EmailService {
@@ -41,7 +45,7 @@ class EmailService {
     locals: Record<string, string> = {},
   ) {
     try {
-      const templateInfo = allTemplates[emailAction];
+      const templateInfo = allCandidateTemplates[emailAction];
       locals.frontURL = configs.FRONT_URL;
       const html = await this.templateParser.render(
         templateInfo.templateName,
@@ -50,6 +54,52 @@ class EmailService {
       return this.transporter.sendMail({
         from: "No reply",
         to: email,
+        subject: templateInfo.subject,
+        html,
+      });
+    } catch (e) {
+      throw new ApiError(e.message, e.status);
+    }
+  }
+
+  public async sendHREmail(
+    email: string | string[],
+    emailAction: EEmailHREnum,
+    locals: Record<string, string> = {},
+  ) {
+    try {
+      const templateInfo = allHRTemplates[emailAction];
+      locals.frontURL = configs.FRONT_URL;
+      const html = await this.templateParser.render(
+        templateInfo.templateName,
+        locals,
+      );
+      return this.transporter.sendMail({
+        from: "No reply",
+        to: email,
+        subject: templateInfo.subject,
+        html,
+      });
+    } catch (e) {
+      throw new ApiError(e.message, e.status);
+    }
+  }
+
+  public async sendCompanyEmail(
+    cooperative_email: string | string[],
+    emailAction: EEmailCompanyEnum,
+    locals: Record<string, string> = {},
+  ) {
+    try {
+      const templateInfo = allCompanyTemplates[emailAction];
+      locals.frontURL = configs.FRONT_URL;
+      const html = await this.templateParser.render(
+        templateInfo.templateName,
+        locals,
+      );
+      return this.transporter.sendMail({
+        from: "No reply",
+        to: cooperative_email,
         subject: templateInfo.subject,
         html,
       });

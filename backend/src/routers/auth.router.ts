@@ -86,9 +86,28 @@ router.post(
   authController.forgotCandidatePassword,
 );
 
+router.post(
+  "/forgot-password-hr",
+  hrMiddleware.getDynamicallyOrThrow("email"),
+  authController.forgotHRPassword,
+);
+
+router.post(
+  "/forgot-password-company",
+  companyMiddleware.getDynamicallyOrThrow("cooperative_email"),
+  authController.forgotCompanyPassword,
+);
+
 router.patch(
   "/forgot-password-candidate/:token",
   authController.setCandidateForgotPassword,
+);
+
+router.patch("/forgot-password-hr/:token", authController.setHRForgotPassword);
+
+router.patch(
+  "/forgot-password-company/:token",
+  authController.setCompanyForgotPassword,
 );
 
 export const authRouter = router;

@@ -24,3 +24,7 @@ export type IHRTokenPayload = Pick<IHR, "_id">;
 export type ICompanyTokenPayload = Pick<ICompany, "_id">;
 
 export type ICandidateActionTokenPayload = Pick<ICandidate, "_id">;
+
+export type IHRActionTokenPayload = Pick<IHR, "_id">;
+
+export type ICompanyActionTokenPayload = Pick<ICompany, "_id">;
