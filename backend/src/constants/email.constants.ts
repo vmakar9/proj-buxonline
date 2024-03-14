@@ -7,4 +7,8 @@ export const allCandidateTemplates: {
     subject: "Restore password",
     templateName: "forgot_password_candidate",
   },
+  [EEmailCandidateEnum.WELCOME]: {
+    subject: "Welcome candidate",
+    templateName: "welcome_candidate",
+  },
 };

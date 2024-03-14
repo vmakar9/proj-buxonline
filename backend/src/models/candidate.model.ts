@@ -1,5 +1,7 @@
 import { model, Schema } from "mongoose";
 
+import { EAccountStatusEnum } from "../enum/account-status.enum";
+
 const candidateSchema = new Schema(
   {
     name: {
@@ -16,6 +18,11 @@ const candidateSchema = new Schema(
       required: [true, "Email is required"],
       trim: true,
       lowercase: true,
+    },
+    status: {
+      type: String,
+      default: EAccountStatusEnum.not_verified,
+      enum: EAccountStatusEnum,
     },
     password: {
       type: String,

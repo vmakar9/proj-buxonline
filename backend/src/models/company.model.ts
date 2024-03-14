@@ -1,5 +1,7 @@
 import { model, Schema } from "mongoose";
 
+import { EAccountStatusEnum } from "../enum/account-status.enum";
+
 const companySchema = new Schema(
   {
     name: {
@@ -18,6 +20,11 @@ const companySchema = new Schema(
     },
     about_company: {
       type: String,
+    },
+    status: {
+      type: String,
+      default: EAccountStatusEnum.not_verified,
+      enum: EAccountStatusEnum,
     },
     password: {
       type: String,

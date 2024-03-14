@@ -110,4 +110,10 @@ router.patch(
   authController.setCompanyForgotPassword,
 );
 
+router.put("/verify-candidate/:token", authController.verifyCandidate);
+
+router.put("/verify-hr/:token", authController.verifyHR);
+
+router.put("/verify-company/:token", authController.verifyCompany);
+
 export const authRouter = router;

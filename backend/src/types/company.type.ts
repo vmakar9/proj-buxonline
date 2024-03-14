@@ -1,5 +1,5 @@
-export interface ICompany {
-  _id: string;
+import { Document } from "mongoose";
+export interface ICompany extends Document {
   name: string;
   cooperative_email: string;
   specialization: string;

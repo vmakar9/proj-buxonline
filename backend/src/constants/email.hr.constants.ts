@@ -7,4 +7,8 @@ export const allHRTemplates: {
     subject: "Restore password",
     templateName: "forgot_password_hr",
   },
+  [EEmailHREnum.WELCOME]: {
+    subject: "Welcome HR",
+    templateName: "welcome_hr",
+  },
 };

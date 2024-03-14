@@ -129,7 +129,7 @@ class TokenService {
           secret = configs.JWT_COMPANY_REFRESH_SECRET;
           break;
       }
-      return jwt.verify(token, secret) as ICandidateTokenPayload;
+      return jwt.verify(token, secret) as ICompanyTokenPayload;
     } catch (e) {
       throw new ApiError("Token not valid", 401);
     }
@@ -143,6 +143,9 @@ class TokenService {
     switch (tokenType) {
       case EActionTokenType.forgot:
         secret = configs.JWT_CANDIDATE_FORGOT_SECRET;
+        break;
+      case EActionTokenType.verify:
+        secret = configs.JWT_CANDIDATE_VERIFY_SECRET;
         break;
     }
 
@@ -160,6 +163,9 @@ class TokenService {
       switch (type) {
         case EActionTokenType.forgot:
           secret = configs.JWT_CANDIDATE_FORGOT_SECRET;
+          break;
+        case EActionTokenType.verify:
+          secret = configs.JWT_CANDIDATE_VERIFY_SECRET;
           break;
       }
       return jwt.verify(
@@ -180,6 +186,9 @@ class TokenService {
       case EActionTokenType.forgot:
         secret = configs.JWT_HR_FORGOT_SECRET;
         break;
+      case EActionTokenType.verify:
+        secret = configs.JWT_HR_VERIFY_SECRET;
+        break;
     }
 
     return jwt.sign(payload, secret, {
@@ -193,6 +202,9 @@ class TokenService {
       switch (type) {
         case EActionTokenType.forgot:
           secret = configs.JWT_HR_FORGOT_SECRET;
+          break;
+        case EActionTokenType.verify:
+          secret = configs.JWT_HR_VERIFY_SECRET;
           break;
       }
       return jwt.verify(actionHRToken, secret) as IHRActionTokenPayload;
@@ -210,6 +222,9 @@ class TokenService {
       case EActionTokenType.forgot:
         secret = configs.JWT_COMPANY_FORGOT_SECRET;
         break;
+      case EActionTokenType.verify:
+        secret = configs.JWT_COMPANY_VERIFY_SECRET;
+        break;
     }
 
     return jwt.sign(payload, secret, {
@@ -226,6 +241,9 @@ class TokenService {
       switch (type) {
         case EActionTokenType.forgot:
           secret = configs.JWT_COMPANY_FORGOT_SECRET;
+          break;
+        case EActionTokenType.verify:
+          secret = configs.JWT_COMPANY_VERIFY_SECRET;
           break;
       }
       return jwt.verify(

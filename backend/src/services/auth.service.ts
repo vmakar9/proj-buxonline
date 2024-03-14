@@ -1,3 +1,4 @@
+import { EAccountStatusEnum } from "../enum/account-status.enum";
 import { EActionTokenType } from "../enum/action-token-type.enum";
 import { EEmailCandidateEnum } from "../enum/email-candiate.enum";
 import { EEmailCompanyEnum } from "../enum/email-company.enum";
@@ -38,7 +39,31 @@ class AuthService {
     try {
       const { password } = body;
       const hashedPassword = await passwordService.hash(password);
-      await Candidate.create({ ...body, password: hashedPassword });
+      const candidate = await Candidate.create({
+        ...body,
+        password: hashedPassword,
+      });
+
+      const actionToken = tokenService.generateCandidateActionToken(
+        { _id: candidate._id },
+        EActionTokenType.verify,
+      );
+
+      await Promise.all([
+        ActionCandidateToken.create({
+          actionToken,
+          _candidate_id: candidate._id,
+          tokenType: EActionTokenType.verify,
+        }),
+        emailService.sendCandidateEmail(
+          body.email,
+          EEmailCandidateEnum.WELCOME,
+          {
+            name: body.name,
+            actionToken,
+          },
+        ),
+      ]);
     } catch (e) {
       throw new ApiError(e.message, e.status);
     }
@@ -75,7 +100,23 @@ class AuthService {
     try {
       const { password } = body;
       const hashedPassword = await passwordService.hash(password);
-      await HR.create({ ...body, password: hashedPassword });
+      const hr = await HR.create({ ...body, password: hashedPassword });
+
+      const actionToken = tokenService.generateHRActionToken(
+        { _id: hr._id },
+        EActionTokenType.verify,
+      );
+      await Promise.all([
+        ActionHRToken.create({
+          actionToken,
+          _hr_id: hr._id,
+          tokenType: EActionTokenType.verify,
+        }),
+        emailService.sendHREmail(hr.email, EEmailHREnum.WELCOME, {
+          name: body.name,
+          actionToken,
+        }),
+      ]);
     } catch (e) {
       throw new ApiError(e.message, e.status);
     }
@@ -112,7 +153,31 @@ class AuthService {
     try {
       const { password } = body;
       const hashedPassword = await passwordService.hash(password);
-      await Company.create({ ...body, password: hashedPassword });
+      const company = await Company.create({
+        ...body,
+        password: hashedPassword,
+      });
+
+      const actionToken = tokenService.generateCompanyActionToken(
+        { _id: company._id },
+        EActionTokenType.verify,
+      );
+
+      await Promise.all([
+        ActionCompanyToken.create({
+          actionToken,
+          _company_id: company._id,
+          tokenType: EActionTokenType.verify,
+        }),
+        emailService.sendCompanyEmail(
+          body.cooperative_email,
+          EEmailCompanyEnum.WELCOME,
+          {
+            name: body.name,
+            actionToken,
+          },
+        ),
+      ]);
     } catch (e) {
       throw new ApiError(e.message, e.status);
     }
@@ -435,6 +500,69 @@ class AuthService {
       await Promise.all([
         Company.findByIdAndUpdate(payload._id, {
           password: newHashedPassword,
+        }),
+        ActionCompanyToken.deleteOne({ actionToken }),
+      ]);
+    } catch (e) {
+      throw new ApiError(e.message, e.status);
+    }
+  }
+
+  public async verifyCandidate(actionToken: string) {
+    try {
+      const payload = tokenService.checkCandidateActionToken(
+        actionToken,
+        EActionTokenType.verify,
+      );
+      const entity = await ActionCandidateToken.findOne({ actionToken });
+      if (!entity) {
+        throw new ApiError("Token not valid", 400);
+      }
+      await Promise.all([
+        Candidate.findByIdAndUpdate(payload._id, {
+          status: EAccountStatusEnum.verified,
+        }),
+        ActionCandidateToken.deleteOne({ actionToken }),
+      ]);
+    } catch (e) {
+      throw new ApiError(e.message, e.status);
+    }
+  }
+
+  public async verifyHR(actionToken: string) {
+    try {
+      const payload = tokenService.checkHRActionToken(
+        actionToken,
+        EActionTokenType.verify,
+      );
+      const entity = await ActionHRToken.findOne({ actionToken });
+      if (!entity) {
+        throw new ApiError("Token not valid", 400);
+      }
+      await Promise.all([
+        HR.findByIdAndUpdate(payload._id, {
+          status: EAccountStatusEnum.verified,
+        }),
+        ActionHRToken.deleteOne({ actionToken }),
+      ]);
+    } catch (e) {
+      throw new ApiError(e.message, e.status);
+    }
+  }
+
+  public async verifyCompany(actionToken: string) {
+    try {
+      const payload = tokenService.checkCompanyActionToken(
+        actionToken,
+        EActionTokenType.verify,
+      );
+      const entity = await ActionCompanyToken.findOne({ actionToken });
+      if (!entity) {
+        throw new ApiError("Token not valid", 400);
+      }
+      await Promise.all([
+        Company.findByIdAndUpdate(payload._id, {
+          status: EAccountStatusEnum.verified,
         }),
         ActionCompanyToken.deleteOne({ actionToken }),
       ]);

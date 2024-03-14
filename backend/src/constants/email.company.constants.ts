@@ -7,4 +7,8 @@ export const allCompanyTemplates: {
     subject: "Restore password",
     templateName: "forgot_password_company",
   },
+  [EEmailCompanyEnum.WELCOME]: {
+    subject: "Welcome Company",
+    templateName: "welcome_company",
+  },
 };

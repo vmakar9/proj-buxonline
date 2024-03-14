@@ -1,5 +1,6 @@
-export interface IHR {
-  _id: string;
+import { Document } from "mongoose";
+
+export interface IHR extends Document {
   name: string;
   surname: string;
   email: string;

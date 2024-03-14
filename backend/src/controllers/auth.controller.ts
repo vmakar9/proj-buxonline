@@ -266,6 +266,46 @@ class AuthController {
       next(e);
     }
   }
+
+  public async verifyCandidate(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const token = req.params.token;
+
+      await authService.verifyCandidate(token);
+
+      return res.sendStatus(204);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async verifyHR(req: Request, res: Response, next: NextFunction) {
+    try {
+      const token = req.params.token;
+
+      await authService.verifyHR(token);
+
+      return res.sendStatus(204);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async verifyCompany(req: Request, res: Response, next: NextFunction) {
+    try {
+      const token = req.params.token;
+
+      await authService.verifyCompany(token);
+
+      return res.sendStatus(204);
+    } catch (e) {
+      next(e);
+    }
+  }
 }
 
 export const authController = new AuthController();
