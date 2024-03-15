@@ -13,6 +13,11 @@ export interface ICompanyCredentials {
   password: string;
 }
 
+export interface IAdminCredentials {
+  email: string;
+  password: string;
+}
+
 export interface IChangePassword {
   oldPassword: string;
   newPassword: string;

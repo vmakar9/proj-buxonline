@@ -1,9 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 
+import { EAdminTokenType } from "../enum/admin-token-type.enum";
 import { ECandidateTokenEnum } from "../enum/candidate-token-type.enum";
 import { ECompanyTokenEnum } from "../enum/company-token-type.enum";
 import { EHRTokenEnum } from "../enum/hr-token-type.enum";
 import { ApiError } from "../erorr/api.error";
+import { AdminToken } from "../models/admin.token.model";
 import { CandidateToken } from "../models/candidate.token.model";
 import { CompanyToken } from "../models/company.token.model";
 import { HRToken } from "../models/hr.token.model";
@@ -153,6 +155,56 @@ class AuthMiddleware {
         ECompanyTokenEnum.refreshCompany,
       );
       const tokenInfo = await CompanyToken.findOne({ refreshCompanyToken });
+      req.res.locals = { jwtPayload, tokenInfo };
+      next();
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async checkAdminAccessToken(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const tokenString = req.get("Authorization");
+      if (!tokenString) {
+        throw new ApiError("No token", 401);
+      }
+
+      const accessAdminToken = tokenString.split("Bearer ")[1];
+
+      const jwtPayload = tokenService.checkAdminToken(
+        accessAdminToken,
+        EAdminTokenType.accessAdmin,
+      );
+      const tokenInfo = await AdminToken.findOne({ accessAdminToken });
+      req.res.locals = { jwtPayload, tokenInfo };
+      next();
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async checkAdminRefreshToken(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const tokenString = req.get("Authorization");
+      if (!tokenString) {
+        throw new ApiError("No token", 401);
+      }
+
+      const refreshAdminToken = tokenString.split("Bearer ")[1];
+
+      const jwtPayload = tokenService.checkAdminToken(
+        refreshAdminToken,
+        EAdminTokenType.refreshAdmin,
+      );
+      const tokenInfo = await AdminToken.findOne({ refreshAdminToken });
       req.res.locals = { jwtPayload, tokenInfo };
       next();
     } catch (e) {

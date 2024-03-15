@@ -1,6 +1,7 @@
 import Router from "express";
 
 import { authController } from "../controllers/auth.controller";
+import { adminMiddleware } from "../middleware/admin.middleware";
 import { authMiddleware } from "../middleware/auth.middleware";
 import { candidateMiddleware } from "../middleware/candidate.middleware";
 import { companyMiddleware } from "../middleware/company.middleware";
@@ -97,6 +98,43 @@ router.post(
   companyMiddleware.getDynamicallyOrThrow("cooperative_email"),
   authController.forgotCompanyPassword,
 );
+
+router.post(
+  "/admin-register",
+  adminMiddleware.getDynamicallyAndThrow("email"),
+  authController.adminRegister,
+);
+
+router.post(
+  "/admin-login",
+  adminMiddleware.getDynamicallyOrThrow("email"),
+  authController.adminLogin,
+);
+
+router.post(
+  "/refresh-admin",
+  authMiddleware.checkAdminRefreshToken,
+  authController.refreshAdmin,
+);
+
+router.post(
+  "/change-password-admin",
+  authMiddleware.checkAdminAccessToken,
+  authController.changeAdminPassword,
+);
+
+router.post(
+  "/forgot-password-admin",
+  adminMiddleware.getDynamicallyOrThrow("email"),
+  authController.forgotAdminPassword,
+);
+
+router.patch(
+  "/forgot-password-admin/:token",
+  authController.setAdminForgotPassword,
+);
+
+router.put("/verify-admin/:token", authController.verifyAdmin);
 
 router.patch(
   "/forgot-password-candidate/:token",

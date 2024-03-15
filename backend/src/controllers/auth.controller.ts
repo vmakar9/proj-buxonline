@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { authService } from "../services/auth.service";
 import { IChangePassword } from "../types/auth.type";
 import {
+  IAdminTokenPayload,
   ICandidateTokenPayload,
   ICompanyTokenPayload,
   IHRTokenPayload,
@@ -300,6 +301,100 @@ class AuthController {
       const token = req.params.token;
 
       await authService.verifyCompany(token);
+
+      return res.sendStatus(204);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async adminRegister(req: Request, res: Response, next: NextFunction) {
+    try {
+      await authService.adminRegister(req.body);
+      res.sendStatus(201);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async adminLogin(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email, password } = req.body;
+      const { admin } = req.res.locals;
+      const tokenPair = await authService.adminLogin(
+        { email, password },
+        admin,
+      );
+      return res.status(201).json(tokenPair);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async refreshAdmin(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { tokenInfo, jwtPayload } = req.res.locals;
+      const tokenPair = await authService.refreshAdmin(tokenInfo, jwtPayload);
+      return res.status(200).json(tokenPair);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async changeAdminPassword(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const jwtPayload = req.res.locals.jwtPayload as IAdminTokenPayload;
+      const body = req.body as IChangePassword;
+
+      await authService.changeAdminPassword(body, jwtPayload);
+      return res.sendStatus(204);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async forgotAdminPassword(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { admin } = req.res.locals;
+
+      await authService.forgotAdminPassword(admin);
+
+      return res.json("OK");
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async setAdminForgotPassword(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const token = req.params.token;
+      const newPassword = req.body.newPassword;
+
+      await authService.setForgotAdminPassword(newPassword, token);
+
+      return res.sendStatus(204);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async verifyAdmin(req: Request, res: Response, next: NextFunction) {
+    try {
+      const token = req.params.token;
+
+      await authService.verifyAdmin(token);
 
       return res.sendStatus(204);
     } catch (e) {

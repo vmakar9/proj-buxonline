@@ -5,5 +5,6 @@ export interface ICompany extends Document {
   specialization: string;
   site_link: string;
   about_company: string;
+  status: string;
   password: string;
 }

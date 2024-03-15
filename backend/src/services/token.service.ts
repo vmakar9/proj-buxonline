@@ -2,11 +2,15 @@ import * as jwt from "jsonwebtoken";
 
 import { configs } from "../configs/configs";
 import { EActionTokenType } from "../enum/action-token-type.enum";
+import { EAdminTokenType } from "../enum/admin-token-type.enum";
 import { ECandidateTokenEnum } from "../enum/candidate-token-type.enum";
 import { ECompanyTokenEnum } from "../enum/company-token-type.enum";
 import { EHRTokenEnum } from "../enum/hr-token-type.enum";
 import { ApiError } from "../erorr/api.error";
 import {
+  IAdminActionTokenPayload,
+  IAdminTokenPair,
+  IAdminTokenPayload,
   ICandidateActionTokenPayload,
   ICandidateTokenPair,
   ICandidateTokenPayload,
@@ -26,7 +30,7 @@ class TokenService {
       payload,
       configs.JWT_CANDIDATE_ACCESS_SECRET,
       {
-        expiresIn: "1d",
+        expiresIn: "1h",
       },
     );
     const refreshCandidateToken = jwt.sign(
@@ -44,7 +48,7 @@ class TokenService {
 
   public generateHRToken(payload: IHRTokenPayload): IHRTokenPair {
     const accessHRToken = jwt.sign(payload, configs.JWT_HR_ACCESS_SECRET, {
-      expiresIn: "1d",
+      expiresIn: "1h",
     });
     const refreshHRToken = jwt.sign(payload, configs.JWT_HR_REFRESH_SECRET, {
       expiresIn: "30h",
@@ -62,7 +66,7 @@ class TokenService {
       payload,
       configs.JWT_COMPANY_ACCESS_SECRET,
       {
-        expiresIn: "1d",
+        expiresIn: "1h",
       },
     );
     const refreshCompanyToken = jwt.sign(
@@ -250,6 +254,80 @@ class TokenService {
         actionCompanyToken,
         secret,
       ) as ICompanyActionTokenPayload;
+    } catch (e) {
+      throw new ApiError("Token not valid", 401);
+    }
+  }
+
+  public generateAdminToken(payload: IAdminTokenPayload): IAdminTokenPair {
+    const accessAdminToken = jwt.sign(
+      payload,
+      configs.JWT_ADMIN_ACCESS_SECRET,
+      {
+        expiresIn: "1h",
+      },
+    );
+    const refreshAdminToken = jwt.sign(
+      payload,
+      configs.JWT_ADMIN_REFRESH_SECRET,
+      {
+        expiresIn: "30h",
+      },
+    );
+    return {
+      accessAdminToken,
+      refreshAdminToken,
+    };
+  }
+
+  public checkAdminToken(
+    token: string,
+    tokenType: EAdminTokenType,
+  ): IAdminTokenPayload {
+    try {
+      let secret = "";
+      switch (tokenType) {
+        case EAdminTokenType.accessAdmin:
+          secret = configs.JWT_ADMIN_ACCESS_SECRET;
+          break;
+        case EAdminTokenType.refreshAdmin:
+          secret = configs.JWT_ADMIN_REFRESH_SECRET;
+          break;
+      }
+      return jwt.verify(token, secret) as IAdminTokenPayload;
+    } catch (e) {
+      throw new ApiError("Token not valid", 401);
+    }
+  }
+
+  public generateAdminActionToken(
+    payload: IAdminActionTokenPayload,
+    tokenType: EActionTokenType,
+  ) {
+    let secret = "";
+    switch (tokenType) {
+      case EActionTokenType.forgot:
+        secret = configs.JWT_ADMIN_FORGOT_SECRET;
+        break;
+      case EActionTokenType.verify:
+        secret = configs.JWT_ADMIN_VERIFY_SECRET;
+        break;
+    }
+    return jwt.sign(payload, secret, { expiresIn: "3d" });
+  }
+
+  public checkAdminActionToken(token: string, tokeType: EActionTokenType) {
+    try {
+      let secret = "";
+      switch (tokeType) {
+        case EActionTokenType.forgot:
+          secret = configs.JWT_ADMIN_FORGOT_SECRET;
+          break;
+        case EActionTokenType.verify:
+          secret = configs.JWT_ADMIN_VERIFY_SECRET;
+          break;
+      }
+      return jwt.verify(token, secret) as IAdminActionTokenPayload;
     } catch (e) {
       throw new ApiError("Token not valid", 401);
     }

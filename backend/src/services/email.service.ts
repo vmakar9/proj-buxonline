@@ -3,9 +3,11 @@ import nodemailer, { Transporter } from "nodemailer";
 import * as path from "path";
 
 import { configs } from "../configs/configs";
+import { allAdminTemplates } from "../constants/email.admin.constants";
 import { allCompanyTemplates } from "../constants/email.company.constants";
 import { allCandidateTemplates } from "../constants/email.constants";
 import { allHRTemplates } from "../constants/email.hr.constants";
+import { EEmailAdminEnum } from "../enum/email-admin.enum";
 import { EEmailCandidateEnum } from "../enum/email-candiate.enum";
 import { EEmailCompanyEnum } from "../enum/email-company.enum";
 import { EEmailHREnum } from "../enum/email-hr.enum";
@@ -100,6 +102,29 @@ class EmailService {
       return this.transporter.sendMail({
         from: "No reply",
         to: cooperative_email,
+        subject: templateInfo.subject,
+        html,
+      });
+    } catch (e) {
+      throw new ApiError(e.message, e.status);
+    }
+  }
+
+  public async sendAdminEmail(
+    email: string | string[],
+    emailAction: EEmailAdminEnum,
+    locals: Record<string, string> = {},
+  ) {
+    try {
+      const templateInfo = allAdminTemplates[emailAction];
+      locals.frontURL = configs.FRONT_URL;
+      const html = await this.templateParser.render(
+        templateInfo.templateName,
+        locals,
+      );
+      return this.transporter.sendMail({
+        from: "No reply",
+        to: email,
         subject: templateInfo.subject,
         html,
       });
