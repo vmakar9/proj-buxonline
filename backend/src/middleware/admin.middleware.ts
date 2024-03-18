@@ -39,7 +39,7 @@ class AdminMiddleware {
         const admin = await Admin.findOne({ [dbField]: fieldValue });
 
         if (!admin) {
-          throw new ApiError("Candidate not found", 422);
+          throw new ApiError("Admin not found", 422);
         }
         req.res.locals = { admin };
         next();
