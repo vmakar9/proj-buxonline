@@ -19,6 +19,10 @@ const candidateSchema = new Schema(
       trim: true,
       lowercase: true,
     },
+    CV: {
+      type: String,
+      required: false,
+    },
     status: {
       type: String,
       default: EAccountStatusEnum.not_verified,

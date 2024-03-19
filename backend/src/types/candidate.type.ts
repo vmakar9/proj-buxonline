@@ -4,5 +4,6 @@ export interface ICandidate extends Document {
   surname: string;
   email: string;
   status: string;
+  CV?: string;
   password: string;
 }

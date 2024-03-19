@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { UploadedFile } from "express-fileupload";
 
 import { candidateService } from "../services/candidate.service";
 import { ICandidate } from "../types/candidate.type";
@@ -33,6 +34,28 @@ class CandidateController {
       await candidateService.deleteMe(jwtPayload);
 
       res.sendStatus(204);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async uploadCV(req: Request, res: Response, next: NextFunction) {
+    try {
+      const jwtPayload = req.res.locals.jwtPayload as ICandidateTokenPayload;
+      const CV = req.files.CV as UploadedFile;
+      const candidate = await candidateService.uploadCV(CV, jwtPayload);
+      res.status(201).json(candidate);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async deleteCV(req: Request, res: Response, next: NextFunction) {
+    try {
+      const jwtPayload = req.res.locals.jwtPayload as ICandidateTokenPayload;
+      const candidate = await candidateService.deleteCV(jwtPayload);
+
+      return res.status(201).json(candidate);
     } catch (e) {
       next(e);
     }
