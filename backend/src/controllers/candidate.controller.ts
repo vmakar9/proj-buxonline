@@ -60,6 +60,40 @@ class CandidateController {
       next(e);
     }
   }
+
+  public async uploadCandidateAvatar(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const jwtPayload = req.res.locals.jwtPayload as ICandidateTokenPayload;
+      const avatar = req.files.avatar as UploadedFile;
+      const candidate = await candidateService.uploadCandidateAvatar(
+        avatar,
+        jwtPayload,
+      );
+      res.status(201).json(candidate);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async deleteCandidateAvatar(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const jwtPayload = req.res.locals.jwtPayload as ICandidateTokenPayload;
+      const candidate =
+        await candidateService.deleteCandidateAvatar(jwtPayload);
+
+      return res.status(201).json(candidate);
+    } catch (e) {
+      next(e);
+    }
+  }
 }
 
 export const candidateController = new CandidateController();

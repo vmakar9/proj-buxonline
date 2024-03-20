@@ -23,6 +23,10 @@ const candidateSchema = new Schema(
       type: String,
       required: false,
     },
+    avatar: {
+      type: String,
+      required: false,
+    },
     status: {
       type: String,
       default: EAccountStatusEnum.not_verified,

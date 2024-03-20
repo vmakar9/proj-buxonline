@@ -37,4 +37,17 @@ router.delete(
   candidateController.deleteCV,
 );
 
+router.put(
+  "/my-avatar",
+  authMiddleware.checkCandidateAccessToken,
+  fileMiddleware.isAvatarValid,
+  candidateController.uploadCandidateAvatar,
+);
+
+router.delete(
+  "/my-avatar",
+  authMiddleware.checkCandidateAccessToken,
+  candidateController.deleteCandidateAvatar,
+);
+
 export const candidateRouter = router;

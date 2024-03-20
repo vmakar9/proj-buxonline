@@ -19,6 +19,10 @@ const hrSchema = new Schema(
       trim: true,
       lowercase: true,
     },
+    avatar: {
+      type: String,
+      required: false,
+    },
     status: {
       type: String,
       default: EAccountStatusEnum.not_verified,
