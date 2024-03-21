@@ -6,11 +6,11 @@ const hrSchema = new Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: false,
     },
     surname: {
       type: String,
-      required: true,
+      required: false,
     },
     email: {
       type: String,

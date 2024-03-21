@@ -1,8 +1,11 @@
+import { UploadedFile } from "express-fileupload";
+
 import { ApiError } from "../erorr/api.error";
 import { Company } from "../models/company.model";
 import { CompanyToken } from "../models/company.token.model";
 import { ICompany } from "../types/company.type";
 import { ICompanyTokenPayload } from "../types/token.type";
+import { s3Service } from "./s3.service";
 
 class CompanyService {
   public async getMyCompany(
@@ -40,6 +43,56 @@ class CompanyService {
       Company.findByIdAndDelete({ _id: jwtPayload._id }),
       CompanyToken.deleteMany({ _company_id: jwtPayload._id }),
     ]);
+  }
+
+  public async uploadCompanyAvatar(
+    file: UploadedFile,
+    jwtPayload: ICompanyTokenPayload,
+  ): Promise<ICompany> {
+    try {
+      const company = await Company.findOne({ _id: jwtPayload._id });
+      if (company.avatar) {
+        await s3Service.deleteCompanyAvatar(company.avatar);
+      }
+      const filePath = await s3Service.uploadCompanyAvatar(
+        file,
+        "company-avatar",
+        jwtPayload._id,
+      );
+
+      return await Company.findByIdAndUpdate(
+        jwtPayload._id,
+        { avatar: filePath },
+        { returnDocument: "after" },
+      );
+    } catch (e) {
+      throw new ApiError(e.error, e.message);
+    }
+  }
+
+  public async deleteCompanyAvatar(
+    jwtPayload: ICompanyTokenPayload,
+  ): Promise<ICompany> {
+    try {
+      const company = await Company.findOne({ _id: jwtPayload._id });
+
+      if (!company) {
+        throw new ApiError("You cant get this candidate", 403);
+      }
+      if (!company.avatar) {
+        throw new ApiError("Candidate doesnt have CV", 422);
+      }
+
+      await s3Service.deleteCompanyAvatar(company.avatar);
+
+      return await Company.findByIdAndUpdate(
+        jwtPayload._id,
+        { $unset: { avatar: true } },
+        { returnDocument: "after" },
+      );
+    } catch (e) {
+      throw new ApiError(e.error, e.message);
+    }
   }
 }
 

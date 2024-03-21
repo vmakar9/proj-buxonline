@@ -57,7 +57,7 @@ class HrService {
       );
 
       return await HR.findByIdAndUpdate(
-        { _id: jwtPayload._id },
+        jwtPayload._id,
         { avatar: filePath },
         { returnDocument: "after" },
       );

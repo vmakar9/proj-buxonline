@@ -106,7 +106,7 @@ class CandidateService {
       );
 
       return await Candidate.findByIdAndUpdate(
-        { _id: jwtPayload._id },
+        jwtPayload._id,
         { avatar: filePath },
         { returnDocument: "after" },
       );
