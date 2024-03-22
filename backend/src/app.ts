@@ -8,6 +8,7 @@ import { authRouter } from "./routers/auth.router";
 import { candidateRouter } from "./routers/candidate.router";
 import { companyRouter } from "./routers/company.router";
 import { hrRouter } from "./routers/hr.router";
+import { vacancyRouter } from "./routers/vacany.router";
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use("/candidate", candidateRouter);
 app.use("/hr", hrRouter);
 app.use("/company", companyRouter);
 app.use("/admin", adminRouter);
+app.use("/vacancy", vacancyRouter);
 app.listen(configs.PORT, async () => {
   await mongoose.connect(configs.DB_URL);
 

@@ -1,5 +1,8 @@
-export interface IVacancy {
-  _id: string;
+import { Document, Types } from "mongoose";
+
+import { ICompany } from "./company.type";
+
+export interface IVacancy extends Document {
   title: string;
   salary: string;
   type_job: string;
@@ -8,5 +11,6 @@ export interface IVacancy {
   description: string;
   requirements: string;
   social_packages: string;
-  additional_information: string;
+  additional_information?: string;
+  company: ICompany | Types.ObjectId;
 }

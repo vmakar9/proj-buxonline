@@ -1,8 +1,9 @@
-import { model, Schema } from "mongoose";
+import { model, Schema, Types } from "mongoose";
 
 import { EEnglishLevel } from "../enum/english-level.enum";
 import { ENatureOfWork } from "../enum/nature-of-work.enum";
 import { ETypeJob } from "../enum/type-job.enum";
+import { Company } from "./company.model";
 
 const vacancySchema = new Schema(
   {
@@ -44,6 +45,11 @@ const vacancySchema = new Schema(
     additional_information: {
       type: String,
       required: false,
+    },
+    company: {
+      type: Types.ObjectId,
+      required: true,
+      ref: Company,
     },
   },
   {
